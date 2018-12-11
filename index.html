@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WEB1 - Welcome</title>
+    <meta charset="utf-8" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="colors.js"></script>
+  </head>
+  <body>
+    <input type="button" id="authBtn" name="" value="...checking" />
+    <p id="status"></p>
+    <h1><a href="index.html">WEB</a></h1>
+    <input
+      id="night_day"
+      type="button"
+      value="night"
+      onclick="
+    nightDayHandler(this);
+  "
+    />
+    <ol>
+      <li><a href="1.html">HTML</a></li>
+      <li><a href="2.html">CSS</a></li>
+      <li><a href="3.html">JavaScript</a></li>
+    </ol>
+    <h2>WEB</h2>
+    <p>
+      The World Wide Web (abbreviated WWW or the Web) is an information space where documents and
+      other web resources are identified by Uniform Resource Locators (URLs), interlinked by
+      hypertext links, and can be accessed via the Internet.[1] English scientist Tim Berners-Lee
+      invented the World Wide Web in 1989. He wrote the first web browser computer program in 1990
+      while employed at CERN in Switzerland.[2][3] The Web browser was released outside of CERN in
+      1991, first to other research institutions starting in January 1991 and to the general public
+      on the Internet in August 1991.
+    </p>
+    <script>
+      function facebookLogin() {
+        FB.login(
+          function(response) {
+            // handle the response
+            console.log("FB.login");
+            loginStatusCallback(response);
+          },
+          { scope: "public_profile,email" }
+        );
+      }
+
+      function facebookLogout() {
+        FB.logout(function(response) {
+          // Person is now logged out
+          console.log("FB.logout");
+          loginStatusCallback(response);
+        });
+      }
+
+      function loginStatusCallback(response) {
+        console.log(response);
+        let authBtn = $("#authBtn");
+        if (response.status === "connected") {
+          authBtn
+            .attr("value", "log out")
+            .off()
+            .on("click", facebookLogout);
+
+          FB.api(response.authResponse.userID, function(response) {
+            if (response && !response.error) {
+              /* handle the result */
+              console.log("user info");
+              console.log(response);
+              $("#status").prepend(`${response.name} is currently logged in.`);
+            }
+          });
+        } else {
+          authBtn.attr("value", "log in");
+          authBtn.off();
+          authBtn.on("click", facebookLogin);
+          $("#status").empty();
+        }
+      }
+
+      $(document).ready(function() {
+        // Instead of importing the Facebook JavaScript SDK with the default async script, use jQuery’s getScript() method to import the SDK from the correct URL for your user’s locale.You can leave out the protocol from the beginning of the URL, and this will serve a matching protocol for the current URL.
+
+        // By default, jQuery timestamps asynchronous requests to avoid them being cached by the browser.You’ll want to disable this functionality using the ajaxSetup() method, so that the SDK is cached locally between pages.
+        $.ajaxSetup({ cache: true });
+        $.getScript("https://connect.facebook.net/en_US/sdk.js", function() {
+          FB.init({
+            appId: "208792706697993",
+            version: "v3.2" // or v2.1, v2.2, v2.3, ...
+          });
+
+          FB.getLoginStatus(loginStatusCallback);
+        });
+      });
+    </script>
+  </body>
+</html>
